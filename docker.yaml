@@ -1,0 +1,30 @@
+- name: Install prerequisites
+  package:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg2
+      - software-properties-common
+    state: present
+- apt_key: "url=https://download.docker.com/linux/ubuntu/gpg"
+  name: Add Docker GPG key
+- apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/{{ ansible_distribution | lower }} focal stable"
+  name: Add Docker APT repository
+- name: Install Docker
+  package:
+    name:
+      - docker-ce
+      - docker-ce-cli
+    state: present
+    update_cache: true
+- name: Install docker-compose
+  get_url:
+    url : https://github.com/docker/compose/releases/download/1.29.2/docker-compose-Linux-x86_64
+    dest: /usr/local/bin/docker-compose
+    mode: 0755
+- name: Install pip packages
+  pip:
+    name: docker-compose
+    state: present

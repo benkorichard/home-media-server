@@ -1,0 +1,47 @@
+services:
+  apache:
+    image: httpd:2.4
+    ports:
+      - 8080:80
+    restart: always
+    volumes:
+      - {{ data_dir }}/downloads/complete:/usr/local/apache2/htdocs
+  minidlna:
+    image: vladgh/minidlna
+    container_name: minidlna
+    network_mode: host
+    volumes:
+      - {{ data_dir }}/downloads/complete:/media
+    environment:
+      - MINIDLNA_MEDIA_DIR=/media
+      - MINIDLNA_FRIENDLY_NAME=Media
+    restart: always
+  samba:
+    image: dperson/samba
+    container_name: samba
+    ports:
+      - 139:139
+      - 445:445
+    command: -s "media;/mount;yes;no"
+    volumes:
+      - {{ data_dir }}/downloads/complete:/mount
+    restart: always
+  transmission:
+    image: ghcr.io/linuxserver/transmission
+    container_name: transmission
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Budapest
+      - USER={{ transmission.user }}
+      - PASS={{ transmission.password }}
+    volumes:
+      - {{ data_dir }}/config:/config
+      - {{ data_dir }}/downloads:/downloads
+      - {{ data_dir }}/watch:/watch
+    ports:
+      - 80:9091
+      - 51413:51413
+      - 51413:51413/udp
+    restart: always
+version: "3.8"

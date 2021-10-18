@@ -1,0 +1,12 @@
+- become: true
+  handlers:
+    - name: Reload monit
+      shell: monit reload
+  hosts: media
+  tasks:
+    - include_tasks: docker.yaml
+    - include_tasks: monitoring.yaml
+    - include_tasks: env.yaml
+    - include_tasks: media.yaml
+  vars_files:
+    - vars/main.yaml

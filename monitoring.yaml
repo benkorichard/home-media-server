@@ -1,0 +1,14 @@
+- name: Install monitoring
+  package:
+    name: monit
+    state: present
+- name: Deploy monit config
+  template:
+      dest: /etc/monit/monitrc
+      src: monitrc.j2
+  notify: Reload monit
+- name: Enable monit service
+  service:
+    enabled: true
+    name: monit
+    state: started
